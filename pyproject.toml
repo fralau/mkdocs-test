@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mkdocs-test"
-version = "0.4.0"
+version = "0.4.1"
 description = "file: README.md"
 authors = [
     { name = "Laurent Franceschetti" }
@@ -19,7 +19,8 @@ dependencies = [
 [project.optional-dependencies]
 test = [
     "pytest>=7.0",
-    "mkdocs-macros"
+    "mkdocs-macros",
+    "toml-cli"
 ]
 
 [tool.mkdocs]
