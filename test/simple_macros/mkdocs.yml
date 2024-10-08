@@ -1,0 +1,16 @@
+site_name: Hello World
+theme: mkdocs
+
+nav:
+    - Home: index.md
+    - Next page: second.md
+
+plugins:
+  - search
+  - macros
+  - test
+
+extra:
+  apples: 10
+  unit_cost: 50
+

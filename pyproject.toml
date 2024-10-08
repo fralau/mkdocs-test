@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mkdocs-test"
+version = "0.4.0"
+description = "file: README.md"
+authors = [
+    { name = "Laurent Franceschetti" }
+]
+license = { text = "LICENSE" }
+dependencies = [
+    "beautifulsoup4",
+    "markdown",
+    "pandas"
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0",
+    "mkdocs-macros"
+]
+
+[tool.mkdocs]
+site_name = "MkDoc Test Documentation"
+
+[tool.mkdocs.plugins]
+test = {}
+
+[project.entry-points."mkdocs.plugins"]
+test = "mkdocs_test.plugin:TestPlugin"
+
