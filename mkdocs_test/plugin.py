@@ -104,33 +104,10 @@ class TestPlugin(BasePlugin):
         self.nav: all pages, created by on_nav().
         """
         pages = []
-        for item in self.nav.items:
-            log.debug(fmt("Nav item:", item))
-            if isinstance(item, Page):
-                d = convert_object(item)
-                d.file = convert_object(item.file)
-
-                # # get the source file and decompose it
-                # src_filename = os.path.join(self.docs_dir, d.file.src_uri)
-                # assert os.path.isfile(src_filename), f"'{src_filename}' does not exist"
-                # with open(src_filename, 'r') as f:
-                #     source = f.read()
-                # markdown, frontmatter, meta = get_frontmatter(source) 
-                # d.source = {
-                #     'text': source,
-                #     'markdown': markdown,
-                #     'frontmatter': frontmatter,
-                #     'meta': meta
-                # }
-                # # get the source markdown from the corresponding pag
-
-                # # d.raw_markdown = self.raw_markdown[item.file.src_uri]
-                # # get the plain text (resulting)
-                # soup = BeautifulSoup(d.content, "html.parser")
-                # d.plain_text = soup.get_text()
-                pages.append(d)
-            elif hasattr(item, 'children'):
-                pages.extend(self.get_page_list(item))
+        for page in self.nav.pages:
+            d = convert_object(page)
+            d.file = convert_object(page.file)
+            pages.append(d)
         return SuperDict({page.file.src_uri: page for page in pages})
 
     # ----------------------------
@@ -140,18 +117,6 @@ class TestPlugin(BasePlugin):
     def on_nav(self, nav, config, files):
         "Set the nav"
         self._nav = nav
-
-    # @event_priority(LOWEST_PRIORITY)
-    # def on_page_markdown(self, markdown: str, *, page: Page, 
-    #                      config: MkDocsConfig, files: Files) -> str | None:
-    #     """
-    #     This doesn't do anything to the markdown.
-    #     It recovers its final version
-    #     (after various internal transformations).
-    #     """
-    #     page_uri = page.file.src_uri
-    #     self.raw_markdown[page_uri] = markdown
-    #     return markdown
 
     @event_priority(LOWEST_PRIORITY)
     def on_post_build(self, config):

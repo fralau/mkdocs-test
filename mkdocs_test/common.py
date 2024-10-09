@@ -89,10 +89,12 @@ def find_page(name:str, filenames:List) -> str:
     """
     for filename in filenames:
         # give priority to exact matches
+        # print("Checking:", filename)
         if name == filename:
             return filename
         # try without extension
         stem, _ = os.path.splitext(filename)
+        # print("Checking:", stem)
         if name == stem:
             return filename
     # try again without full path
@@ -100,6 +102,7 @@ def find_page(name:str, filenames:List) -> str:
         if filename.endswith(name):
             return filename
         stem, _ = os.path.splitext(filename)
+        # print("Checking:", stem)
         if stem.endswith(name):
             return filename
 

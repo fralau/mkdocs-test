@@ -15,6 +15,9 @@ function get_value {
     toml get --toml-path pyproject.toml $1
 }
 
+# Clean the subdirs, for safety and to guarantee integrity
+./cleanup.sh
+
 # Check for changes in the files compared to the repository
 if ! git diff --quiet; then
   warn "Won't do it: there are changes in the repository. Please commit first!"

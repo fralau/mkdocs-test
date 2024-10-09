@@ -8,10 +8,18 @@ Testing the project
 import pytest
 
 from mkdocs_test import DocProject
-
+import warnings
 
 
 def test_pages():
+    try:
+        import mkdocs_macros
+    except ImportError:
+        # NOTE: no declaration as a pre-requisite, to avoid circular references in the two packages
+        warnings.warn("Mkdocs-macros not installed, cannot test. "
+                      "Install it with `pip install mkdocs-macros, "
+                      "if you want.", UserWarning)
+        return
     project = DocProject()
     project.build(strict=False)
     # did not fail

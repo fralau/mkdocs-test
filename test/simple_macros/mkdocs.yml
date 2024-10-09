@@ -1,3 +1,7 @@
+# NOTE: this test requires mkdocs-macros in order to run
+# You must install it, if not done
+# `pip install mkdocs-macros`
+
 site_name: Hello World
 theme: mkdocs
 

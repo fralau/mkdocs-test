@@ -55,6 +55,13 @@ def test_pages():
     assert page.find('second page',header="subtitle", header_level=2)
 
 
+    # ----------------
+    # Third page
+    # check that it handles subdirs correctly
+    # ----------------
+    page_path = 'other/third.md'
+    page = project.pages[page_path] # it is found by its pathname
+    assert "# This is a third file" in page.markdown
     
 def test_strict():
     "This project must fail"

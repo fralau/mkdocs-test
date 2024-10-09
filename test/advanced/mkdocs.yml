@@ -1,0 +1,12 @@
+site_name: Simple MkDocs Website
+theme: mkdocs
+
+nav:
+    - Home: index.md
+    - Next page: second.md
+    - Third page: other/third.md
+
+plugins:
+  - search
+  - test
+

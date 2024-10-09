@@ -447,10 +447,15 @@ class DocProject(object):
     @property
     def page_map_file(self):
         "The page map file exported by the Test plugin"
-        return os.path.join(self.test_dir, PAGE_MAP)
+        filename = os.path.join(self.test_dir, PAGE_MAP)
+        if not os.path.isfile(filename):
+            raise FileNotFoundError("The pagemap file was not found. " 
+                        "Did you forget to declare the `test` plugin "
+                        "in the MkDocs config file?")
+        return filename
 
     @property
-    def pages(self) -> SuperDict[MkDocsPage]:
+    def pages(self) -> dict[MkDocsPage]:
         "The dictionary of Markdown pages + the HTML produced by the build"
         try:
             return self._pages
@@ -461,7 +466,7 @@ class DocProject(object):
             self._pages = {key: MkDocsPage(value) for key, value in pages.items()}
             return self._pages
         
-    def get_page(self, name:str) -> MkDocsPage:
+    def get_page(self, name:str) -> MkDocsPage | None:
         """
         Find a name in the list of Markdown pages (filenames)
         using a name (full or partial, with or without extension).
@@ -471,7 +476,7 @@ class DocProject(object):
         # get the filename we want, from that list:
         filename = find_page(name, filenames)
         # return the corresponding page:
-        return self.pages[filename]
+        return self.pages.get(filename)
         
     # ----------------------------------
     # Log
