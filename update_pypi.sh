@@ -30,6 +30,7 @@ warn "Rebuilding $package_name..."
 rm -rf build dist *.egg-info
 python3 -m build
 if twine upload dist/* ; then
+    git push # just in case
     warn "... create tag $package_version, and push to remote git repo..."
     git tag $package_version
     git push --tags
