@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mkdocs-test"
-version = "0.4.3"
+version = "0.4.4"
 description = "A test framework for MkDocs projects"
 authors = [
     { name = "Laurent Franceschetti" }
@@ -34,7 +34,6 @@ Source = "https://github.com/fralau/mkdocs-test"
 [project.optional-dependencies]
 test = [
     "pytest>=7.0",
-    "mkdocs-macros",
     "toml-cli"
 ]
 
