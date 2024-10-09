@@ -27,7 +27,7 @@ package_version=v$(get_value project.version) # add a 'v' in front (git conventi
 
 # update Pypi
 warn "Rebuilding $package_name..."
-rm -rf build dist *.egg-info
+rm -rf build dist *.egg-info # necessary to guarantee integrity
 python3 -m build
 if twine upload dist/* ; then
     git push # just in case
