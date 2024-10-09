@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mkdocs-test"
-version = "0.4.2"
+version = "0.4.3"
 description = "A test framework for MkDocs projects"
 authors = [
     { name = "Laurent Franceschetti" }
@@ -28,7 +28,8 @@ classifiers = [
     "Programming Language :: Python :: 3.11"
 ]
 
-
+[project.urls]
+Source = "https://github.com/fralau/mkdocs-test"
 
 [project.optional-dependencies]
 test = [
