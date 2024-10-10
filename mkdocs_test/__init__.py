@@ -515,7 +515,7 @@ class DocProject(object):
 
 
     def find_entries(self, title:str='', source:str='',
-                     severity:str='') -> List[SuperDict]:
+                     severity:str='') -> List[LogEntry]:
         """
         Filter entries according to criteria of title and severity;
         all criteria are case-insensitive.

@@ -1,0 +1,15 @@
+site_name: Alteration of source Markdown
+theme: readthedocs
+
+nav:
+    - Home: index.md
+    - Next page: second.md
+
+hooks:
+  # Mkdocs hook for doing the alteration (instead of a plugin)
+  - hooks.py
+
+plugins:
+  - search
+  - test
+

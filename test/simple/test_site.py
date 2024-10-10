@@ -7,7 +7,7 @@ Testing the project
 
 import pytest
 
-from mkdocs_test import Docproject
+from mkdocs_test import DocProject
 from mkdocs_test.common import h1, h2, h3
 
 
@@ -15,7 +15,7 @@ from mkdocs_test.common import h1, h2, h3
 
 
 def test_pages():
-    project = Docproject()
+    project = DocProject()
     project.build(strict=False)
 
     h1(f"Testing project: {project.config.site_name}")
@@ -58,7 +58,7 @@ def test_pages():
     
 def test_strict():
     "This project must fail"
-    project = Docproject()
+    project = DocProject()
 
     # it must not fail with the --strict option,
     project.build(strict=True)

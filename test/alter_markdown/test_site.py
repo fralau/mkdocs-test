@@ -10,13 +10,14 @@ import pytest
 from mkdocs_test import DocProject
 from mkdocs_test.common import h1, h2, h3
 
+from .hooks import MY_VARIABLES
 
 
 
 
 def test_pages():
     project = DocProject()
-    project.build(strict=False)
+    project.build(strict=True)
 
     h1(f"Testing project: {project.config.site_name}")
 
@@ -40,36 +41,37 @@ def test_pages():
     h2(f"Testing: {pagename}")
     page = project.get_page(pagename)
     print("Plain text:", page.plain_text)
+
+    # it has been altered
+    assert page.markdown.strip() != page.source.markdown.strip()
+    assert page.is_markdown_rendered() # check that markdown is rendered
+
+    # null test
+    assert "foobar" not in page.markdown
+
+    # brute-force testing
+    assert "hello world" in page.markdown.lower()
+
+    # check that the values of the variables have been properly rendered:
+    assert page.find(MY_VARIABLES['x'], header="Values")
+    assert page.find(MY_VARIABLES['y'], header="Values")
+    assert page.find(MY_VARIABLES['message'], header="Message")
     
 
 
     # ----------------
     # Second page
     # ----------------
-    # there is intentionally an error (`foo` does not exist)
     pagename = 'second'
     h2(f"Testing: {pagename}")
     page = project.get_page(pagename)
-    assert page.meta.foo == "Hello world"
-    assert "second page" in page.plain_text
-    assert page.find('second page',header="subtitle", header_level=2)
+    assert page
+    # not altered
+    assert page.markdown.strip() == page.source.markdown.strip() 
+    assert not page.is_markdown_rendered()
 
-
-    # ----------------
-    # Third page
-    # check that it handles subdirs correctly
-    # ----------------
-    page_path = 'other/third.md'
-    page = project.pages[page_path] # it is found by its pathname
-    assert "# This is a third file" in page.markdown
     
-def test_strict():
-    "This project must fail"
-    project = DocProject()
 
-    # it must not fail with the --strict option,
-    project.build(strict=True)
-    assert not project.build_result.returncode, "Failed when it should not"
 
 
 
