@@ -1,8 +1,10 @@
 # -------------------------------------------------------------
 # update the package on pypi
+# 2024-10-12
 #
 # Tip: if you don't want to retype pypi's username every time
 #      define it as an environment variable (TWINE_USERNAME)
+#
 # -------------------------------------------------------------
 function warn {
     GREEN='\033[0;32m'

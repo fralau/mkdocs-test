@@ -55,6 +55,18 @@ def test_pages():
     assert page.find('second page',header="subtitle", header_level=2)
 
 
+    # test find_header() method
+    assert page.find_header('subtitle', 2) # by level
+    assert not page.find_header('subtitle', 3)
+    assert page.find_header('subtitle') # all levels
+
+    # test find_all; all headers of level 2:
+    headers = page.find_all('h2')
+    assert len(headers) == 2
+    print("Headers found:", headers)
+    assert "Second header" in headers[1].string
+
+
     
 def test_strict():
     "This project must fail"

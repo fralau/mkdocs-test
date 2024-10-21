@@ -9,7 +9,9 @@ from typing import List
 import json
 from typing import Any, List
 
+
 from bs4 import BeautifulSoup
+from bs4.element import Tag as HTMLTag
 
 
 "A dictionary where the keys are also accessible with the dot notation"
@@ -170,7 +172,7 @@ class MkDocsPage(SuperDict):
     def html(self):
         """
         The final HTML code that will be displayed,
-        complete with json, etc. (the end product).
+        complete with javascript, etc. (the end product).
         """
         try:
             return self._html
@@ -215,12 +217,14 @@ class MkDocsPage(SuperDict):
                 # with SuperDict, in case of AttributeError (get_attr)
                 raise Exception(e)
 
-
+    # ----------------------------------
+    # Smart functions
+    # ----------------------------------
 
     def find(self, pattern: str, 
              header: str = None, header_level: int = None) -> str | None:
         """
-        Find a text or regex pattern in the markdown page (case-insensitive).
+        Find a text or regex pattern in the html page (case-insensitive).
         
         Arguments
         ---------
@@ -234,11 +238,64 @@ class MkDocsPage(SuperDict):
         Returns
         -------
         The line where the pattern was found, or None
+
+        Note
+        ----
+        This is NOT the soup.find() function of BeautifulSoup.
+        We formulated it in a way that is more adapted for testing.
+        If you really need the BeautifulSoup version, you can
+        use the .find_all() method and take the first item. 
         """
         # it operates on the html
         return find_in_html(self.html,
                             pattern=pattern, 
                             header=header, header_level=header_level)
+
+
+
+    def find_all(self, tag: str, *args, **kwargs) -> list[HTMLTag]:
+        """
+        Extract tags from the HTML source and return them with their attributes
+        and content.
+        
+        It wraps the soup.find_all() function of Beautiful soup:
+        https://beautiful-soup-4.readthedocs.io/en/latest/index.html?highlight=find_all#find-all
+
+        Arguments
+        ---------
+        - tag is the string argument of soup.find_all(), i.e. the tag
+
+        Returns
+        -------
+        Each tag returned in the list contains in particular:
+        - attrs: A dictionary of the attributes
+        - string:  The text within the tag (None if there are nexted tags)
+
+        Note
+        ----
+        For various ways of formulating the query:
+        https://beautiful-soup-4.readthedocs.io/en/latest/index.html?highlight=find_all#kinds-of-filters
+        """
+        soup = BeautifulSoup(self.html, 'html.parser')
+        tags = soup.find_all(tag, *args, **kwargs)
+        return tags
+    
+
+    def find_header(self, pattern: str, header_level:int=None) -> str | None: 
+        """
+        Returns the first header (h1, h2, h3...) that matches a pattern;
+        otherwise None
+        """
+        soup = BeautifulSoup(self.html, 'html.parser')
+        if header_level is None:
+            criterion = re.compile(r'h[1-6]')
+        else:
+            criterion = f'h{header_level}'
+        headers = soup.find_all(criterion,
+                                    string=re.compile(pattern))
+        r = [header.text for header in headers]
+        if len(r):
+            return r[0]
 
 
 

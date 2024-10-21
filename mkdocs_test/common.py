@@ -146,9 +146,15 @@ def style_dataframe(df:pd.DataFrame):
     # reassign str to rich (to avoid messing up when rich.print is used)
     df.__rich__ = _rich_str.__get__(df)
 
+
+# --------------------------------------------
+# Smart find/extraction functions (HTML)
+# --------------------------------------------
+
+
 def extract_tables_from_html(html:str, formatter:callable=None):
     """
-    Extract tables from a HTML source and convert them into dataframes
+    Extract tables from an HTML source and convert them into dataframes
     """
     soup = BeautifulSoup(html, 'html.parser')
     tables = soup.find_all('table')
@@ -175,29 +181,6 @@ def extract_tables_from_html(html:str, formatter:callable=None):
     return dataframes
 
 
-def get_frontmatter(text:str) -> tuple[str, dict]:
-    """
-    Get the front matter from a markdown file.
-
-    Returns
-    -------
-        - markdown
-        - frontmatter
-        - metadata
-    """
-    # Split the content to extract the YAML front matter
-    parts = text.split('---',maxsplit=2)
-    if len(parts) > 1:
-        frontmatter = parts[1].strip()
-        metadata = SuperDict(yaml.safe_load(frontmatter))
-        try:
-            markdown = parts[2]
-        except IndexError:
-            markdown = ''
-        return (markdown.strip(), frontmatter, metadata)
-    else:
-        return (text, '', {})
-    
 def find_in_html(html: str, 
                  pattern: str, 
                  header: str = None, header_level: int = None) -> str | None:
@@ -271,7 +254,38 @@ def find_in_html(html: str,
 
 
 
+# --------------------------------------------
+# Smart find/extraction functions (Markdown)
+# --------------------------------------------
+
+def get_frontmatter(text:str) -> tuple[str, dict]:
+    """
+    Get the front matter from a markdown file.
+
+    Returns
+    -------
+        - markdown
+        - frontmatter
+        - metadata
+    """
+    # Split the content to extract the YAML front matter
+    parts = text.split('---',maxsplit=2)
+    if len(parts) > 1:
+        frontmatter = parts[1].strip()
+        metadata = SuperDict(yaml.safe_load(frontmatter))
+        try:
+            markdown = parts[2]
+        except IndexError:
+            markdown = ''
+        return (markdown.strip(), frontmatter, metadata)
+    else:
+        return (text, '', {})
     
+
+
+
+    
+
 
 
 def get_first_h1(markdown_text: str):
