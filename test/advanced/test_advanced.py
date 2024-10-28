@@ -52,7 +52,7 @@ def test_pages():
     page = project.get_page(pagename)
     assert page.meta.foo == "Hello world"
     assert "second page" in page.plain_text
-    assert page.find('second page',header="subtitle", header_level=2)
+    assert page.find_text('second page',header="subtitle", header_level=2)
 
 
     # ----------------

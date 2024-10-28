@@ -52,7 +52,7 @@ def test_pages():
     page = project.get_page(pagename)
     assert page.meta.foo == "Hello world"
     assert "second page" in page.plain_text
-    assert page.find('second page',header="subtitle", header_level=2)
+    assert page.find_text('second page',header="subtitle", header_level=2)
 
 
     # test find_header() method
@@ -65,6 +65,8 @@ def test_pages():
     assert len(headers) == 2
     print("Headers found:", headers)
     assert "Second header" in headers[1].string
+    # check that find also works:
+    assert page.find('h2').string == headers[0].string
 
 
     

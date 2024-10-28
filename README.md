@@ -23,6 +23,7 @@ markdown-toc -i README.md
     - [Installing the plugin](#installing-the-plugin)
     - [Performing basic tests](#performing-basic-tests)
     - [Tests on a page](#tests-on-a-page)
+    - [Testing the HTML](#testing-the-html)
   - [Performing advanced tests](#performing-advanced-tests)
     - [Reading the configuration file](#reading-the-configuration-file)
     - [Accessing page metadata](#accessing-page-metadata)
@@ -152,7 +153,7 @@ assert "hello world" in page.html
 # at level 2; arguments header and header_level are optional
 # the method returns the text so found (if found)
 # the search is case insensitive
-assert page.find('second page', header="subtitle", header_level=2)
+assert page.find_text_text('second page', header="subtitle", header_level=2)
 ```
 
 > ⚠️ **Two markdown versions** <br>  `page.markdown`
@@ -164,6 +165,19 @@ assert page.find('second page', header="subtitle", header_level=2)
 > use `page.source.text`.
 
 
+### Testing the HTML
+You can directly access the `.find()` and `.find_all()` methods 
+offered by [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/#find-all).  
+
+```python
+page = project.get_page('foo')
+headers = page.find_all('h2') # get all headers of level 2
+for header in headers:
+  print(header.string)
+
+script = page.find('script', type="module")
+assert 'import foo' in script.string
+```
 
 ## Performing advanced tests
 

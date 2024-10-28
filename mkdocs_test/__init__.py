@@ -221,7 +221,7 @@ class MkDocsPage(SuperDict):
     # Smart functions
     # ----------------------------------
 
-    def find(self, pattern: str, 
+    def find_text(self, pattern: str, 
              header: str = None, header_level: int = None) -> str | None:
         """
         Find a text or regex pattern in the html page (case-insensitive).
@@ -238,19 +238,20 @@ class MkDocsPage(SuperDict):
         Returns
         -------
         The line where the pattern was found, or None
-
-        Note
-        ----
-        This is NOT the soup.find() function of BeautifulSoup.
-        We formulated it in a way that is more adapted for testing.
-        If you really need the BeautifulSoup version, you can
-        use the .find_all() method and take the first item. 
         """
         # it operates on the html
         return find_in_html(self.html,
                             pattern=pattern, 
                             header=header, header_level=header_level)
 
+    @property
+    def soup(self):
+        "Soup from BeautifulSoup"
+        try:
+            return self._soup
+        except AttributeError:
+            self._soup = BeautifulSoup(self.html, 'html.parser')
+            return self._soup
 
 
     def find_all(self, tag: str, *args, **kwargs) -> list[HTMLTag]:
@@ -258,8 +259,8 @@ class MkDocsPage(SuperDict):
         Extract tags from the HTML source and return them with their attributes
         and content.
         
-        It wraps the soup.find_all() function of Beautiful soup:
-        https://beautiful-soup-4.readthedocs.io/en/latest/index.html?highlight=find_all#find-all
+        It wraps the soup.find_all() function of BeautifulSoup.
+        See: https://www.crummy.com/software/BeautifulSoup/bs4/doc/#find-all
 
         Arguments
         ---------
@@ -274,11 +275,18 @@ class MkDocsPage(SuperDict):
         Note
         ----
         For various ways of formulating the query:
-        https://beautiful-soup-4.readthedocs.io/en/latest/index.html?highlight=find_all#kinds-of-filters
+        https://www.crummy.com/software/BeautifulSoup/bs4/doc/#kinds-of-filters
         """
-        soup = BeautifulSoup(self.html, 'html.parser')
-        tags = soup.find_all(tag, *args, **kwargs)
+        tags = self.soup.find_all(tag, *args, **kwargs)
         return tags
+
+    def find(self, tag: str, *args, **kwargs) -> HTMLTag|None:
+        """
+        Extracts the first tag from the HTML source.
+        It wraps the soup.find() function of BeautifulSoup.
+        See: https://www.crummy.com/software/BeautifulSoup/bs4/doc/#find
+        """
+        return self.soup.find(tag, *args, **kwargs)
     
 
     def find_header(self, pattern: str, header_level:int=None) -> str | None: 

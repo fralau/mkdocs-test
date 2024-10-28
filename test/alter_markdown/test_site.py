@@ -53,9 +53,9 @@ def test_pages():
     assert "hello world" in page.markdown.lower()
 
     # check that the values of the variables have been properly rendered:
-    assert page.find(MY_VARIABLES['x'], header="Values")
-    assert page.find(MY_VARIABLES['y'], header="Values")
-    assert page.find(MY_VARIABLES['message'], header="Message")
+    assert page.find_text(MY_VARIABLES['x'], header="Values")
+    assert page.find_text(MY_VARIABLES['y'], header="Values")
+    assert page.find_text(MY_VARIABLES['message'], header="Message")
     
 
 
