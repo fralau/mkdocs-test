@@ -43,6 +43,19 @@ def list_doc_projects(directory:str):
     return mkdocs_dirs
 
 
+class MySafeLoader(yaml.SafeLoader):
+    """
+    For reading the config file (mkdocs.yml)
+    It will handle unknown tags, such as:
+    !!python/name:mermaid2.fence_mermaid_custom
+    """
+    pass
+
+def unknown_constructor(loader, tag_suffix, node):
+    return tag_suffix
+
+MySafeLoader.add_multi_constructor('', unknown_constructor)
+
 
 
 
@@ -433,7 +446,8 @@ class DocProject(object):
             return self._config
         except AttributeError:
             with open(self.config_file, 'r', encoding='utf-8') as file:
-                self._config = SuperDict(yaml.safe_load(file))
+                # self._config = SuperDict(yaml.safe_load(file))
+                self._config = SuperDict(yaml.load(file, Loader=MySafeLoader))
             return self._config
         
     def get_plugin(self, name:str) -> SuperDict:
