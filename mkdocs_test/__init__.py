@@ -18,7 +18,8 @@ from bs4.element import Tag as HTMLTag
 from super_collections import SuperDict
 from .common import (get_frontmatter, markdown_to_html, get_first_h1,
                 find_in_html, find_after, list_markdown_files, find_page,
-                run_command, TEST_DIRNAME, DOCS_DEFAULT_DIRNAME, PAGE_MAP) 
+                run_command, TEST_DIRNAME, DOCS_DEFAULT_DIRNAME, PAGE_MAP,
+                h1, h2) 
 
 # ---------------------------
 # Initialization
@@ -378,6 +379,8 @@ class DocProject(object):
         self._project_dir = project_dir
         # test existence of YAML file or fail
         self.config_file
+        # show 
+        h1(f"{self.config.get('site_name')} [{os.path.relpath(project_dir)}]")
 
 
 
