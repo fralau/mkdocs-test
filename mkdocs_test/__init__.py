@@ -71,18 +71,20 @@ class LogEntry(object):
     Represents a log entry
     """
     
-    "Severity (DEBUG, INFO, WARNING)"
     severity: str
+    "Severity (DEBUG, INFO, WARNING)"
 
-    "Source, if available (e.g. [macros])"
     source: str = None
-
-    "Title, first line"
+    "Source, if available (e.g. [macros])"
+    
     title: str = None
+    "Title, first line"
 
-    "Payload, following lines"
     payload: str = None
-
+    """
+    Payload of the entry
+    (following lines, not starting with DEBUG, INFO, WARNING)
+    """
 
 
 def parse_log(mkdocs_log: str) -> list[LogEntry]:
@@ -206,7 +208,13 @@ class MkDocsPage(SuperDict):
     def source(self) -> SuperDict:
         """
         The source information, drawn from the source file
-        (it contains the markdown)
+        (it contains the original markdown, before any rendering).
+
+        Attributes:
+            text: the source text (the full page, as actually typed)
+            markdown: the markdown part of the source text
+            frontmatter: the YAML frontmatter of the page (as a string)
+            meta: the parsed YAML front matter (as a dictionary)
         """
         try:
             return self._source
@@ -240,18 +248,16 @@ class MkDocsPage(SuperDict):
         """
         Find a text or regex pattern in the html page (case-insensitive).
         
-        Arguments
-        ---------
-        - html: the html string
-        - pattern: the text or regex
-        - header (text or regex): if specified, it finds it first,
-        and then looks for the text between that header and the next one
-        (any level).
-        - header_level: you can speciy it, if there is a risk of ambiguity.
+        Arguments:
+            html: the html string
+            pattern: the text or regex
+            header (text or regex): if specified, it finds it first,
+                and then looks for the text between that header and the next one
+                (any level).
+            header_level: you can speciy it, if there is a risk of ambiguity.
 
-        Returns
-        -------
-        The line where the pattern was found, or None
+        Returns:
+            The line where the pattern was found, or None
         """
         # it operates on the html
         return find_in_html(self.html,
@@ -259,8 +265,13 @@ class MkDocsPage(SuperDict):
                             header=header, header_level=header_level)
 
     @property
-    def soup(self):
-        "Soup from BeautifulSoup"
+    def soup(self) -> BeautifulSoup:
+        """
+        Parsed content of the HTML page (as published).
+        
+        Returns:
+            Soup object from BeautifulSoup    
+        """
         try:
             return self._soup
         except AttributeError:
@@ -274,22 +285,21 @@ class MkDocsPage(SuperDict):
         and content.
         
         It wraps the soup.find_all() function of BeautifulSoup.
-        See: https://www.crummy.com/software/BeautifulSoup/bs4/doc/#find-all
+        
 
-        Arguments
-        ---------
-        - tag is the string argument of soup.find_all(), i.e. the tag
+        Arguments:
+            tag: the string argument of soup.find_all(), i.e. the tag
+            others: see [documentation](https://www.crummy.com/software/BeautifulSoup/bs4/doc/#find-all)
 
-        Returns
-        -------
-        Each tag returned in the list contains in particular:
-        - attrs: A dictionary of the attributes
-        - string:  The text within the tag (None if there are nexted tags)
+        Returns:
+            Each tag returned in the list contains in particular
+            `attrs` (a dictionary of the attributes) 
+            and `string` (the text within the tag,
+            but None if there are nested tags).
 
-        Note
-        ----
-        For various ways of formulating the query:
-        https://www.crummy.com/software/BeautifulSoup/bs4/doc/#kinds-of-filters
+        Note:
+            For various ways of formulating the query:
+            see [doc](https://www.crummy.com/software/BeautifulSoup/bs4/doc/#kinds-of-filters)
         """
         tags = self.soup.find_all(tag, *args, **kwargs)
         return tags
@@ -298,22 +308,24 @@ class MkDocsPage(SuperDict):
         """
         Extracts the first tag from the HTML source.
         It wraps the soup.find() function of BeautifulSoup.
-        See: https://www.crummy.com/software/BeautifulSoup/bs4/doc/#find
+        See: [doc](https://www.crummy.com/software/BeautifulSoup/bs4/doc/#find).
         """
         return self.soup.find(tag, *args, **kwargs)
     
 
     def find_header(self, pattern: str, header_level:int=None) -> str | None: 
         """
-        Returns the first header (h1, h2, h3...) that matches a pattern;
-        otherwise None
+        Finds a header in the 
+
+        Returns:
+            The first header (h1, h2, h3...) that matches a pattern;
+            otherwise None
         """
-        soup = BeautifulSoup(self.html, 'html.parser')
         if header_level is None:
             criterion = re.compile(r'h[1-6]')
         else:
             criterion = f'h{header_level}'
-        headers = soup.find_all(criterion,
+        headers = self.soup.find_all(criterion,
                                     string=re.compile(pattern))
         r = [header.text for header in headers]
         if len(r):
@@ -328,21 +340,21 @@ class MkDocsPage(SuperDict):
 
     def is_src_file(self) -> bool:
         """
-        Predicate: does the source (Markdown) file exist?
+        **Predicate**: does the source (Markdown) file exist?
         """
         return os.path.isfile(self.file.abs_src_path)
     
 
     def is_dest_file(self) -> bool:
         """
-        Predicate: does the destination file (HTML) exist?
+        **Predicate**: does the destination file (HTML) exist?
         """
         return os.path.isfile(self.file.abs_dest_path)
 
 
     def is_markdown_rendered(self) -> bool:
         """
-        Predicate: "Rendered" means that the raw Markdown 
+        **Predicate**: "Rendered" means that the raw Markdown 
         is different from the source markdown;
         more accurately, that the source markdown is not 
         contained in the target markdown.
@@ -352,11 +364,13 @@ class MkDocsPage(SuperDict):
         header and footer, etc.).
 
         Hence "not rendered" is a "nothing happened". 
+        
         It covers these cases: 
+
         1. No rendering of the markdown has taken place at all
             (no plugin, or plugin inactive, or not instructions within the page). 
         2. A header and/or footer were added to the Markdown code 
-            (in `on_pre_page_macros()
+            (in `on_pre_page_macros()`
             or in `on_post_page_macro()` in Mkdocs-Macros) but the Markdown 
             itself was not modified.
         3. An order to render was given, but there was actually 
@@ -382,6 +396,14 @@ class DocProject(object):
 
         Designed for pytest: if the path is not defined, 
         it will take the path of the calling program.
+
+        Arguments:
+            project_dir: the project subdirectory name (default: empty)
+            path: the path to the directory (default: path of the calling program)
+
+        Note:
+            It does not perform any build. The `build()` method must
+            be called explicitly.
         """
         if not path:
             # get the caller's directory
@@ -477,16 +499,16 @@ class DocProject(object):
               verbose:bool=False) -> subprocess.CompletedProcess:
         """
         Build the documentation, to perform the tests
+        (equivalent to `mkdocs build`).
+        Running a build is necessary so that the tests can be performed.
 
         Arguments:
-            - strict (default: False) to make the build fail in case of warnings
-            - verbose (default: True), to generate the target_files directory
+            strict: to make the build fail in case of warnings
+            verbose: to generate the target_files directory
 
         Returns:
-        (if desired) the low level result of the process 
-        (return code and stderr).
-
-        This is not needed, since, those values are stored, and parsed.
+            (if desired) the low level result of the process (return code and stderr). 
+            This info is generally not needed, since, those values are stored, and parsed.
         """
         os.chdir(self.project_dir)
         command = MKDOCS_BUILD.copy()
@@ -538,7 +560,10 @@ class DocProject(object):
 
     @property
     def pages(self) -> dict[MkDocsPage]:
-        "The dictionary of Markdown pages + the HTML produced by the build"
+        """
+        The dictionary containing the pages 
+        (Markdown + HTML + ...) produced by the build.
+        """
         try:
             return self._pages
         except AttributeError:
@@ -551,7 +576,9 @@ class DocProject(object):
     def get_page(self, name:str) -> MkDocsPage | None:
         """
         Find a name in the list of Markdown pages (filenames)
-        using a name (full or partial, with or without extension).
+
+        Arguments:
+            name: a page name (full or partial, with or without extension).
         """
         # get all the filenames of pages:
         filenames = [filename for filename in self.pages.keys()]
@@ -565,16 +592,16 @@ class DocProject(object):
     # ----------------------------------
     @property
     def trace(self) -> str:
-        "Return the trace of the execution (log as text)"
+        "Trace of the execution (the log) as text"
         return self.build_result.stderr
     
    
 
     
     @property
-    def log(self) -> List[SuperDict]:
+    def log(self) -> List[LogEntry]:
         """
-        The parsed trace
+        The parsed trace (LogEntry objects)
         """
         try:
             return self._log
@@ -586,7 +613,7 @@ class DocProject(object):
     @property
     def log_severities(self) -> List[str]:
         """
-        List of severities (DEBUG, INFO, WARNING) found
+        List of severities (DEBUG, INFO, WARNING) found in the log
         """
         try:
             return self._log_severities
@@ -603,9 +630,9 @@ class DocProject(object):
         all criteria are case-insensitive.
 
         Arguments:
-            - title: regex
-            - source: regex, for which entity issued it (macros, etc.)
-            - severity: one of the existing sevirities
+            title: regex
+            source: regex, for which entity issued it (macros, etc.)
+            severity: one of the existing sevirities
         """
         if not title and not severity and not source:
             return self.log
@@ -651,9 +678,9 @@ class DocProject(object):
         Find the first entry according to criteria of title and severity
 
         Arguments:
-            - title: regex
-            - source: regex
-            - severity
+            title: regex
+            source: regex
+            severity
         """
         found = self.find_entries(title, 
                                   source=source,

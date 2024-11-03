@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mkdocs-test"
-version = "0.5.3"
+version = "0.5.4"
 description = "A test framework for MkDocs projects"
 authors = [
     { name = "Laurent Franceschetti" }
@@ -48,3 +48,5 @@ test = {}
 [project.entry-points."mkdocs.plugins"]
 test = "mkdocs_test.plugin:TestPlugin"
 
+[tool.setuptools]
+packages = { find = { exclude = ["*.tests", "webdoc"] } }

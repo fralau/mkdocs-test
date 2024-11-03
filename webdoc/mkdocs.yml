@@ -1,0 +1,42 @@
+site_name: Mkdocs-Test
+site_description: A framework for testing MkDocs Projects and Plugins
+docs_dir: docs # indispensable or readthedocs will fail
+theme: 
+  # name: readthedocs
+  name: alabaster
+repo_url: https://github.com/fralau/mkdocs-test
+edit_uri: edit/master/webdoc/docs/
+copyright: Laurent Franceschetti, 2024. This work is licensed under CC BY-SA 4.0.
+nav:
+  - Home: index.md
+  - How to Install: install.md
+  - Getting Started: how_to.md
+  - Advanced Usage: advanced.md
+  - Large Projects: projects.md
+  - API: api.md
+
+markdown_extensions:
+  - admonition
+  - footnotes
+  - pymdownx.superfences
+  - toc:
+      permalink: "¶"
+
+extra:
+  logo: logo.png
+  include_toc: yes
+  extra_nav_links:
+    GitHub: https://github.com/notpushkin/mkdocs-alabaster
+
+plugins:
+  - search
+  - mkdocstrings:
+      enabled: !ENV [ENABLE_MKDOCSTRINGS, true]
+      default_handler: python
+      handlers:
+        python:
+          options:
+            show_source: false
+
+
+
