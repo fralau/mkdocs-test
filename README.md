@@ -4,6 +4,15 @@
 
 #  A testing framework (plugin + test fixture)<br>for MkDocs projects
 
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
+![Language](https://img.shields.io/github/languages/top/fralau/mkdocs-test)
+![Github](https://img.shields.io/github/v/tag/fralau/mkdocs-test?label=github%20tag)
+![PyPI](https://img.shields.io/pypi/v/mkdocs-test)
+![Downloads](https://img.shields.io/pypi/dm/mkdocs-test) 
+
+[View the documentation](https://mkdocs-test-plugin.readthedocs.io/en/latest/) on Read the Docs
+  
 </div>
 
 <!-- To update, run the following command:
@@ -36,8 +45,8 @@ markdown-toc -i README.md
 
 ### What problem does it solve?
 
-Currently the quickest way for maintainers of 
-an [MkDocs](https://www.mkdocs.org/) website project
+Traditionally, the quickest way for maintainers of 
+an existing [MkDocs](https://www.mkdocs.org/) website project
 (or developers of an [MkDocs plugin](https://www.mkdocs.org/dev-guide/plugins/)) 
 to check whether an MkDocs project builds correctly, 
 is to run `mkdocs build` (possibly with the `--strict` option).
@@ -47,16 +56,6 @@ It leaves the following issues open:
 - It doesn't perform integrity tests on the pages; if something started to
   go wrong, the issue might emerge only later.
 - If something went already wrong, it doesn't necessarily say where, or why.
-
-One solution is to write an ad-hoc program to make tests on
-the target (HTML) pages; this requires
-knowing in advance where those files will be stored.
-
-Manually keeping track of those target files is doable
-for small documentation projects;
-but for larger ones, or for conducting systematic tests, it becomes
-quickly impractical.
-
 
 
 ### MkDocs-Test
