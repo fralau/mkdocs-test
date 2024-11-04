@@ -2,6 +2,8 @@
 
 ## Installing the plugin
 
+MkDocs-Test is an [MkDocs plugin](https://www.mkdocs.org/dev-guide/plugins/).
+
 ### From pypi
 
 ```sh
@@ -14,6 +16,9 @@ pip install mkdocs-test
 pip install .
 ```
 
+
+### Installing the test framework
+
 Or, to install the test dependencies (for testing _this_ package,
 not your MkDocs projects):
 
@@ -21,12 +26,16 @@ not your MkDocs projects):
 pip install .[test]
 ```
 
-### Install the pytest framework
-
-This will help you run the tests easily:
+This will help you run your tests easily, 
+using the [`pytest` framework and command](https://docs.pytest.org/en/stable/):
 
 ```sh
 pip install pytest
 ```
+
+### Getting started
+
+Now that the tools are installed, you can proceed to [write and run the tests](how_to.md)
+for your MkDocs project.
 
 

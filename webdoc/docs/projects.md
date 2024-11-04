@@ -5,6 +5,9 @@
 The purpose of this page is to describe how to test large
 or multiple documentation projects.
 
+The instructions for [installation](install.md)
+and [basic usage](how_to.md) apply. 
+
 
 ## Multiple documentation projects
 

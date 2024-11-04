@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mkdocs-test"
-version = "0.5.4"
+version = "0.5.5"
 description = "A test framework for MkDocs projects"
 authors = [
     { name = "Laurent Franceschetti" }
@@ -32,9 +32,17 @@ classifiers = [
 Source = "https://github.com/fralau/mkdocs-test"
 
 [project.optional-dependencies]
+# for self-testing (test/):
 test = [
     "pytest>=7.0",
-    "toml-cli"
+    "toml-cli",
+    "mkdocs-test"
+]
+
+# for the MkDocs documentation (webdoc/)
+doc = [
+    "mkdocs-alabaster",
+    "mkdocstrings[python]"
 ]
 
 

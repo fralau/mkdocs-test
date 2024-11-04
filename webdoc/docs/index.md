@@ -15,26 +15,28 @@ an [MkDocs](https://www.mkdocs.org/) website project
 has been:
 
 1. Initially, to run `mkdocs serve` to start a local web server,
-   navigate the pages, and watch "what happens".
-2. Later, to run `mkdocs build` (possibly with the `--strict` option).
+   navigate the pages, modify the Markdown pages and watch "what happens" 
+   (interactive editing).
+2. Later, to run `mkdocs build` (possibly with the `--strict` option)
+   before deploying the new version of your static website.
 
 
-However, `mkdocs build` has the following issues:
+However, a plain command `mkdocs build` has the following issues:
 
-- This is a binary proposition: it worked or it didn't.
+- It has a binary result: it worked or it didn't.
 - It doesn't perform integrity tests on the pages; if something started to
   subtly go wrong, the issue might emerge only later.
 - If something went wrong,
   it doesn't necessarily say where, or why.
 
-**What about non-regression tests, when rebuilding the documentation? 
+**How to do non-regression tests, when rebuilding the documentation? 
 No one wants to browse the pages of a large website
 and manually re-check
-each page one by one, each time a new release is made.**
+the pages one by one, each time a new release is made.**
 
 One solution woud be to write an ad-hoc program to make tests on
 the target (HTML) pages; this requires
-knowing in advance where those HTML files will be stored.
+knowing in advance where those HTML files will be stored and their filenames.
 But manually keeping 
 track of those pages for large documentation projects,
 or for conducting systematic tests, becomes
@@ -47,7 +49,8 @@ quickly impractical.
 ### How MkDocs-Test works
 
 The purpose of Mkdocs-Test is to facilitate the comparison of source pages
-(Markdown files) and destination pages (HTML) in an MkDocs project.
+(Markdown files) and destination pages (HTML) in an MkDocs project,
+to make sure that **what you expect is what you get (WYEIWYG)**.
 
 MkDocs-Test is a test system composed of two parts:
 

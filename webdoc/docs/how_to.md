@@ -4,6 +4,8 @@
 While the choice of testing tool is up to you, the examples in this package 
 work with [pytest](https://docs.pytest.org/en/stable/).
 
+For detailed information, see the [documentation of the API](api.md).
+
 ## Setting up your environment 
 1. [Install MkDocs-Test and pytest](install.md).
 2. Declare the `test` plugin in your config file (typically `mkdocs.yml`)
@@ -32,7 +34,9 @@ work with [pytest](https://docs.pytest.org/en/stable/).
     While creating the `__init__.py` is not strictly mandatory, it will
     make your life much easier when using pytest.
 
-## Building the project
+## Basic tests
+
+### Building the project
 
 You are now going to programmatically build the MkDocs project
 (i.e. the equivalent of `mkdocs build`).
@@ -54,7 +58,7 @@ print(project.build_result.returncode) # return code from the build
 project.self_check()
 
 ```
-## Tests on a page
+### Tests on a page
 
 Each page of the MkDocs project can be tested separately
 
@@ -84,7 +88,7 @@ assert page.find_text_text('second page', header="subtitle", header_level=2)
     use `page.source.text`.
 
 
-## Testing the HTML
+### Testing the HTML
 You can directly access the `.find()` and `.find_all()` methods 
 offered by [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/#find-all).  
 
@@ -98,3 +102,31 @@ script = page.find('script', type="module")
 assert 'import foo' in script.string
 ```
 
+## Launching the tests
+
+The recommended way of launching the tests is with the
+[pytest framework](https://docs.pytest.org/en/stable/).
+
+If you have set your local directory at the root of the your documentation
+project and your test program is properly named (here: `test_site.py`), 
+then the pytest command will :
+
+```sh
+> pytest
+=============================== test session starts ===============================
+platform darwin -- Python 3.10.11, pytest-8.3.3, pluggy-1.5.0
+rootdir: ~/home/joe/mkdocs-test
+...
+plugins: anyio-4.3.0
+collected 2 items
+
+test_site.py ..                                                             [100%]
+
+================================ 2 passed in 4.48s ================================
+```
+
+In the most basic form, no configuration file is needed.
+
+## More advanced tests
+
+For more advanced tests, see the [specific section](advanced.md).
