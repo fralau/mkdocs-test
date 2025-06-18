@@ -20,7 +20,7 @@ dependencies = [
     "pandas",
     "pyyaml",
     "rich",
-    "super-collections"
+    "super-collections",
 ]
 
 classifiers = [
