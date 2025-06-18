@@ -16,7 +16,11 @@ readme = "README.md"
 dependencies = [
     "beautifulsoup4",
     "markdown",
-    "pandas"
+    "mkdocs",
+    "pandas",
+    "pyyaml",
+    "rich",
+    "super-collections",
 ]
 
 classifiers = [
