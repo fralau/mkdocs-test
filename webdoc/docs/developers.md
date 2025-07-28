@@ -1,5 +1,7 @@
 # Testing for Developers
 
+_ As of version 0.5.6_
+
 ## Introduction
 
 This page is intended especially for **developers** around MkDocs, typically of plugins.
