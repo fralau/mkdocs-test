@@ -6,12 +6,13 @@ theme:
   name: alabaster
 repo_url: https://github.com/fralau/mkdocs-test
 edit_uri: edit/master/webdoc/docs/
-copyright: Laurent Franceschetti, 2024. This work is licensed under CC BY-SA 4.0.
+copyright: Laurent Franceschetti, 2025. This work is licensed under CC BY-SA 4.0.
 nav:
   - Home: index.md
   - How to Install: install.md
   - Getting Started: how_to.md
   - Advanced Usage: advanced.md
+  - Testing for Developers:  developers.md
   - Large Projects: projects.md
   - API: api.md
 
@@ -28,15 +29,13 @@ extra:
   extra_nav_links:
     GitHub: https://github.com/notpushkin/mkdocs-alabaster
 
+
+
 plugins:
   - search
   - mkdocstrings:
-      enabled: !ENV [ENABLE_MKDOCSTRINGS, true]
-      default_handler: python
       handlers:
         python:
           options:
             show_source: false
-
-
 

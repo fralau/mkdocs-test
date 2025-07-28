@@ -26,6 +26,9 @@ from super_collections import SuperDict
 # ------------------------------------------
 # Initialization
 # ------------------------------------------
+# the test plugin's name
+TEST_PLUGIN = 'test'
+
 # the directory where the export files must go
 TEST_DIRNAME = '__test__'
 
@@ -342,3 +345,11 @@ def get_caller_directory():
     # Get the absolute path of the directory containing the caller file
     directory_abspath = os.path.abspath(os.path.dirname(caller_file))
     return directory_abspath
+
+
+def is_in_dir(pathname: str, parent: str) -> bool:
+    "Check if a pathname is in a parent directory"
+    # Normalize and resolve both paths
+    pathname = os.path.abspath(pathname)
+    parent = os.path.abspath(parent)
+    return os.path.commonpath([pathname, parent]) == parent

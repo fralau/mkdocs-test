@@ -42,3 +42,11 @@ and the fully formed HTML page that will be displayed on a browser.
 This Dataclass describes the attributes of a log entry.
 
 ### :::mkdocs_test.LogEntry
+
+
+## Function: lorem_ipsum()
+
+### ::: mkdocs_test.lorem_ipsum
+    options:
+        show_signature: true
+        show_root_heading: true

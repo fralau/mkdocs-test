@@ -1,5 +1,7 @@
 # from rich import print
 import os
+from pathlib import Path
+import shutil
 import yaml
 import inspect
 import subprocess
@@ -8,6 +10,7 @@ from dataclasses import dataclass, field
 from typing import List
 import json
 from typing import Any, List
+import textwrap
 
 
 from bs4 import BeautifulSoup
@@ -18,8 +21,11 @@ from bs4.element import Tag as HTMLTag
 from super_collections import SuperDict
 from .common import (get_frontmatter, markdown_to_html, get_first_h1,
                 find_in_html, find_after, list_markdown_files, find_page,
-                run_command, TEST_DIRNAME, DOCS_DEFAULT_DIRNAME, PAGE_MAP,
-                h1, h2) 
+                run_command, 
+                TEST_PLUGIN, TEST_DIRNAME, DOCS_DEFAULT_DIRNAME, PAGE_MAP,
+                h1, h2, is_in_dir)
+
+from .lorem import lorem_ipsum
 
 # ---------------------------
 # Initialization
@@ -151,7 +157,7 @@ def parse_log(mkdocs_log: str) -> list[LogEntry]:
 class MkDocsPage(SuperDict):
     "A markdown page from MkDocs, with all its information (source, target)"
 
-    MANDATORY_ATTRS = ['title', 'markdown', 'content', 'meta', 'file']
+    MANDATORY_ATTRS = ['markdown', 'content', 'meta', 'file']
 
     def __init__(self, page:dict):
         # Call the superclass's __init__ method
@@ -249,7 +255,6 @@ class MkDocsPage(SuperDict):
         Find a text or regex pattern in the html page (case-insensitive).
         
         Arguments:
-            html: the html string
             pattern: the text or regex
             header (text or regex): if specified, it finds it first,
                 and then looks for the text between that header and the next one
@@ -285,11 +290,13 @@ class MkDocsPage(SuperDict):
         and content.
         
         It wraps the soup.find_all() function of BeautifulSoup.
+
+        For *args and **kwargs see 
+        [documentation](https://www.crummy.com/software/BeautifulSoup/bs4/doc/#find-all)
         
 
         Arguments:
             tag: the string argument of soup.find_all(), i.e. the tag
-            others: see [documentation](https://www.crummy.com/software/BeautifulSoup/bs4/doc/#find-all)
 
         Returns:
             Each tag returned in the list contains in particular
@@ -390,7 +397,8 @@ class DocProject(object):
     (any plugin).
     """
 
-    def __init__(self, project_dir:str='', path:str=''):
+    def __init__(self, project_dir:str='', path:str='', 
+                 new:bool=False):
         """
         Initialize the documentation project.
 
@@ -398,8 +406,13 @@ class DocProject(object):
         it will take the path of the calling program.
 
         Arguments:
-            project_dir: the project subdirectory name (default: empty)
-            path: the path to the directory (default: path of the calling program)
+            project_dir: the project subdirectory name; 
+                default: empty, same level as path (the calling program)
+            path: the path to the reference directory 
+                default: empty, i.e. directory of the calling program
+            new: create the project dir if it does not exist.
+                (without clearing it)
+                If you use the make_config() method, the docs_dir MUST be 'docs'.
 
         Note:
             It does not perform any build. The `build()` method must
@@ -412,25 +425,36 @@ class DocProject(object):
             path = os.path.abspath(path)
         project_dir = os.path.join(path, project_dir)
         self._project_dir = project_dir
-        # test existence of YAML file or fail
-        self.config_file
-        # show 
-        h1(f"{self.config.get('site_name')} [{os.path.relpath(project_dir)}]")
-
-
-
+        if not os.path.isdir(self._project_dir):
+            if new:
+                # create
+                os.makedirs(self._project_dir, exist_ok=True)
+            else: 
+                raise FileNotFoundError(f"Project directory '{self._project_dir}' does not exist."
+                                        "If you want to force its creation set `new=True`")
+        h1(f"{self.config.get('site_name', 'NO_NAME (yet)')} [{os.path.relpath(project_dir)}]")
         
 
     @property
     def project_dir(self) -> str:
         "The source directory of the MkDocs project (abs or relative path)"
+        if not self._project_dir:
+            raise FileNotFoundError("This project is deleted and no longer has a project directory.")
         return self._project_dir
     
     @property
     def docs_dir(self):
-        "The target directory of markdown files (full path)"
-        return os.path.join(self.project_dir, 
+        """
+        The source directory of markdown files (full path).
+        It attempts to get it from the config file
+        (or returns the default 'docs' directory) 
+        """
+        full_dir = os.path.join(self.project_dir, 
                             self.config.get('docs_dir', DOCS_DEFAULT_DIRNAME))
+        if not os.path.isdir(full_dir):
+            # raise FileNotFoundError(f"Source directory '{full_dir}' does not exist.")
+            os.makedirs(full_dir, exist_ok=True)
+        return full_dir
 
     @property
     def test_dir(self):
@@ -438,9 +462,173 @@ class DocProject(object):
         return os.path.join(self.project_dir, TEST_DIRNAME) 
     
 
-    
     # ----------------------------------
-    # Config file
+    # Create the project source
+    # (this is optional)
+    # ----------------------------------
+
+    def clear(self) -> int:
+        """
+        Clear the docs source directory (and its subdirectories).
+
+        Returns:
+            Number of files removed.
+        
+        Raises:
+            FileNotFoundError: If the documentation source directory does not exist.
+        """
+        if not os.path.isdir(self.docs_dir):
+            raise FileNotFoundError(f"Source directory '{self.docs_dir}' does not exist.")
+
+        removed = 0
+        for root, dirs, files in os.walk(self.docs_dir, topdown=False):
+            for name in files:
+                os.remove(os.path.join(root, name))
+                removed += 1
+            for name in dirs:
+                os.rmdir(os.path.join(root, name))
+        return removed
+
+
+    def make_config(self, content: str='', filename: str = 'mkdocs.yml', **kwargs) -> str:
+        """
+        Creates a config file (YAML, prettyfied) for the mkdocs project.
+        It will make sure that the test plugin is defined.
+
+        Arguments
+        ---------
+        content : str
+            The YAML content as a string (to be parsed and merged).
+            To facilitate the entry on a multiline string, the text is automatically
+            aligned to the left margin (but keeping the indentations).
+        filename : str
+            The filename of the config file.
+        **kwargs :
+            Arguments interpreted as entries in the YAML file.
+            These will precede the parsed content.
+
+        
+            
+        Example
+        -------
+        yaml = MyProject.make_config(site_name='My project',
+                        theme='mkdocs', plugins=['search'])
+
+        Returns
+        -------
+        str
+            The final YAML configuration as written to disk.
+        """
+        # Parse existing YAML content if any
+        content = textwrap.dedent(content).strip()
+        try:
+            parsed_content = yaml.safe_load(content) if content.strip() else {}
+        except yaml.YAMLError as e:
+            raise ValueError(f"Invalid YAML content: {e}")
+
+        # Merge with kwargs (kwargs take precedence)
+        final_config = {**parsed_content, **kwargs}
+
+        # Make sure that TEST_PLUGIN are present
+        # (Otherwise it won't work)
+        plugins = final_config.get('plugins')
+        if plugins is None:
+            final_config['plugins'] = ['search', TEST_PLUGIN]
+        else:
+            if TEST_PLUGIN not in plugins:
+                final_config.append(TEST_PLUGIN)
+
+        # Pretty-print YAML with indentation and ordering preserved
+        pretty_yaml = yaml.dump(final_config, sort_keys=False, allow_unicode=True)
+
+        # Write YAML config to file
+        config_path = os.path.join(self.project_dir, filename)
+        os.makedirs(os.path.dirname(config_path), exist_ok=True)
+        with open(config_path, 'w', encoding='utf-8') as f:
+            f.write(pretty_yaml)
+
+        # store the name of the config file
+        self._config_file = filename
+
+        return pretty_yaml
+
+
+
+    def add_source_page(self, pathname: str, content: str, meta: dict = {}) -> str:
+        """
+        Add a source page to the project
+
+        Arguments:
+        ----------
+        pathname:
+            The pathname of the page (relative to the docs directory).
+            It can be a plain filename, or a relative pathname.
+            Please do not forget to add the extension (typically, '.md')
+        content:
+            The page content, as a string (Markdown with HTML, etc.).
+            To facilitate the entry on a multiline string, the text is automatically
+            aligned to the left margin (but keeping the indentations).
+        meta:
+            The metadata that must go into the YAML page header.
+
+        Returns:
+        --------
+        The full page content with YAML front matter, as written to file.
+        """
+        content = textwrap.dedent(content).strip()
+
+        # Create full path
+        full_path = os.path.join(self.docs_dir, pathname)
+
+        # Ensure parent directory exists
+        os.makedirs(os.path.dirname(full_path), exist_ok=True)
+
+        # Generate YAML header
+        if len(meta):
+            yaml_header = yaml.dump(meta, sort_keys=False, allow_unicode=True).strip()
+            full_page = f"---\n{yaml_header}\n---\n\n{content}"
+        else:
+            full_page = content
+
+        # Write to file
+        with open(full_path, "w", encoding="utf-8") as f:
+            f.write(full_page)
+
+        return full_page
+    
+    @property
+    def source_pages(self):
+        """
+        Get all documentation file names from self.docs_dir.
+
+        Returns:
+        --------
+        A list of relative file paths (to self.docs_dir) for all files.
+        """
+        return [
+            str(path.relative_to(self.docs_dir))
+            for path in Path(self.docs_dir)
+        ]
+    
+    def delete(self):
+        """
+        Deletes the project dir and self.
+
+        WARNING: Do NOT confuse with self.clear()!
+                 USE with caution, this deletes ALL files of the mkdocs project, including the directory.
+                 The object becomes inoperable.
+        """
+        # to avoid failure, set the working directory one level up,
+        # if it was set to the directory or one of its subdirs:
+        if is_in_dir(os.getcwd(), self.project_dir): 
+            os.chdir(os.path.dirname(self.project_dir))
+        # delete the files
+        shutil.rmtree(self.project_dir)
+        # Remove link to project dir, object becomes inoperable.
+        self._project_dir = None
+
+    # ----------------------------------
+    # Reading the config file
     # ----------------------------------
  
     @property
@@ -449,13 +637,14 @@ class DocProject(object):
         try:
             return self._config_file
         except AttributeError:
-            # List of possible mkdocs configuration filenames
+            # List of possible mkdocs configuration filenames (default, if not found)
             CANDIDATES = ['mkdocs.yaml', 'mkdocs.yml']
             for filename in os.listdir(self.project_dir):
                 if filename in CANDIDATES:
                     self._config_file = os.path.join(self.project_dir, filename)
                     return self._config_file
-            raise FileNotFoundError("This is not an MkDocs directory")
+            raise FileNotFoundError("No config file found (this is not an MkDocs directory).")
+        
         
     @property
     def config(self) -> SuperDict:
@@ -463,13 +652,19 @@ class DocProject(object):
         Get the configuration from the config file.
         All main items of the config are accessible with the dot notation.
         (config.site_name, config.theme, etc.)
+
+        If no config file available, provisionally returns an empty SuperDict.
         """
         try:
             return self._config
         except AttributeError:
-            with open(self.config_file, 'r', encoding='utf-8') as file:
-                # self._config = SuperDict(yaml.safe_load(file))
-                self._config = SuperDict(yaml.load(file, Loader=MySafeLoader))
+            try:
+                config_file = self.config_file
+                with open(config_file, 'r', encoding='utf-8') as file:
+                    # self._config = SuperDict(yaml.safe_load(file))
+                    self._config = SuperDict(yaml.load(file, Loader=MySafeLoader))
+            except FileNotFoundError:
+                return SuperDict()
             return self._config
         
     def get_plugin(self, name:str) -> SuperDict:
@@ -680,7 +875,7 @@ class DocProject(object):
         Arguments:
             title: regex
             source: regex
-            severity
+            severity: the severity, e.g. DEBUG, INFO, WARNING
         """
         found = self.find_entries(title, 
                                   source=source,

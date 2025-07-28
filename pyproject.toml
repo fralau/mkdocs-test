@@ -4,11 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mkdocs-test"
-version = "0.5.5"
+version = "0.5.6"
 description = "A test framework for MkDocs projects"
-authors = [
-    { name = "Laurent Franceschetti" }
-]
+authors = [{ name = "Laurent Franceschetti" }]
 license = { text = "LICENSE" }
 
 readme = "README.md"
@@ -29,7 +27,7 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11"
+    "Programming Language :: Python :: 3.11",
 ]
 
 [project.urls]
@@ -37,18 +35,10 @@ Source = "https://github.com/fralau/mkdocs-test"
 
 [project.optional-dependencies]
 # for self-testing (test/):
-test = [
-    "pytest>=7.0",
-    "toml-cli",
-    "mkdocs-test"
-]
+test = ["pytest>=7.0", "toml-cli", "mkdocs-test"]
 
 # for the MkDocs documentation (webdoc/)
-doc = [
-    "mkdocs-alabaster",
-    "mkdocstrings[python]"
-]
-
+doc = ["mkdocs-alabaster", "mkdocstrings[python]"]
 
 
 [tool.mkdocs]
