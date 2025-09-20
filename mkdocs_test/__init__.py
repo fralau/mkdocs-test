@@ -21,7 +21,7 @@ from bs4.element import Tag as HTMLTag
 from super_collections import SuperDict
 from .common import (get_frontmatter, markdown_to_html, get_first_h1,
                 find_in_html, find_after, list_markdown_files, find_page,
-                run_command, 
+                run_command, strip_ansi_colors,
                 TEST_PLUGIN, TEST_DIRNAME, DOCS_DEFAULT_DIRNAME, PAGE_MAP,
                 h1, h2, is_in_dir)
 
@@ -121,6 +121,8 @@ def parse_log(mkdocs_log: str) -> list[LogEntry]:
     log_entries = []
     current_entry = None
     mkdocs_log = mkdocs_log.strip()
+    # Remove the color ANSI codes (to avoid polluting)
+    mkdocs_log = strip_ansi_colors(mkdocs_log)
 
     for line in mkdocs_log.split('\n'):
         match = re.match(r'^([A-Z]+)\s+-\s+(.*)', line)

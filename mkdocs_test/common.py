@@ -67,6 +67,15 @@ def h3(s:str, color:str=TITLE_COLOR):
 # Low-level functions
 # ---------------------------
 
+
+
+def strip_ansi_colors(text):
+    "Strip ANSI color instructions"
+    ansi_escape = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
+    return ansi_escape.sub('', text)
+
+
+
 def find_after(s:str, word:str, pattern:str):
     """
     Find the the first occurence of a pattern after a word
