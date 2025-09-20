@@ -538,7 +538,7 @@ class DocProject(object):
             final_config['plugins'] = ['search', TEST_PLUGIN]
         else:
             if TEST_PLUGIN not in plugins:
-                final_config.append(TEST_PLUGIN)
+                final_config['plugins'].append(TEST_PLUGIN)
 
         # Pretty-print YAML with indentation and ordering preserved
         pretty_yaml = yaml.dump(final_config, sort_keys=False, allow_unicode=True)
