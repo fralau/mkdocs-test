@@ -14,7 +14,7 @@ from io import StringIO
 import inspect
 import subprocess
 import yaml
-from typing import List
+from typing import List, Tuple
 
 import markdown
 import pandas as pd
@@ -186,7 +186,7 @@ def extract_tables_from_html(html:str, formatter:callable=None):
 
 def find_in_html(html: str, 
                  pattern: str, 
-                 header: str = None, header_level: int = None) -> str | None:
+                 header: str = None, header_level: int = None) -> str:
     """
     Find a text or regex pattern in a HTML document (case-insensitive)
     
@@ -261,7 +261,7 @@ def find_in_html(html: str,
 # Smart find/extraction functions (Markdown)
 # --------------------------------------------
 
-def get_frontmatter(text:str) -> tuple[str, dict]:
+def get_frontmatter(text:str) -> Tuple[str, dict]:
     """
     Get the front matter from a markdown file.
 

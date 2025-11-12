@@ -93,7 +93,7 @@ class LogEntry(object):
     """
 
 
-def parse_log(mkdocs_log: str) -> list[LogEntry]:
+def parse_log(mkdocs_log: str) -> List[LogEntry]:
     """
     Parse the log entries, e.g.:
 
@@ -250,7 +250,7 @@ class MkDocsPage(SuperDict):
     # ----------------------------------
 
     def find_text(self, pattern: str, 
-             header: str = None, header_level: int = None) -> str | None:
+             header: str = None, header_level: int = None) -> str:
         """
         Find a text or regex pattern in the html page (case-insensitive).
         
@@ -284,7 +284,7 @@ class MkDocsPage(SuperDict):
             return self._soup
 
 
-    def find_all(self, tag: str, *args, **kwargs) -> list[HTMLTag]:
+    def find_all(self, tag: str, *args, **kwargs) -> List[HTMLTag]:
         """
         Extract tags from the HTML source and return them with their attributes
         and content.
@@ -311,7 +311,7 @@ class MkDocsPage(SuperDict):
         tags = self.soup.find_all(tag, *args, **kwargs)
         return tags
 
-    def find(self, tag: str, *args, **kwargs) -> HTMLTag|None:
+    def find(self, tag: str, *args, **kwargs) -> HTMLTag:
         """
         Extracts the first tag from the HTML source.
         It wraps the soup.find() function of BeautifulSoup.
@@ -320,7 +320,7 @@ class MkDocsPage(SuperDict):
         return self.soup.find(tag, *args, **kwargs)
     
 
-    def find_header(self, pattern: str, header_level:int=None) -> str | None: 
+    def find_header(self, pattern: str, header_level:int=None) -> str: 
         """
         Finds a header in the 
 

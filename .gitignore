@@ -2,6 +2,7 @@
 *~
 .py~
 .python-version
+.vscode
 
 #Byte-compiled led / optimized / DLL files
 __pycache__/
@@ -38,3 +39,6 @@ cache*
 
 # JetBrains PyCharm and other IntelliJ based IDEs
 .idea/
+
+# pytest
+.pytest_cache
