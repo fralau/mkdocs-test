@@ -871,9 +871,10 @@ class DocProject(object):
 
     def find_entry(self, title:str='', 
                    source:str = '',
-                   severity:str='') -> SuperDict | None:
+                   severity:str='') -> SuperDict:
         """
-        Find the first entry according to criteria of title and severity
+        Find the first entry according to criteria of title and severity.
+        Return None is not found.
 
         Arguments:
             title: regex
