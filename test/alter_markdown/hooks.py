@@ -6,7 +6,7 @@ Hook script for altering the code
 MY_VARIABLES = {"x": 5, "y": 12, "message": 'hello world'}
 
 
-def on_page_markdown(markdown:str, *args, **kwargs) -> str | None:
+def on_page_markdown(markdown:str, *args, **kwargs) -> str:
   """
   Process the markdown template, by interpolating the variables
 
