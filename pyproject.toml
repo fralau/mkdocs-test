@@ -19,6 +19,7 @@ dependencies = [
     "pyyaml",
     "rich",
     "super-collections",
+    "lxml", # for pandas (failed in Python 3.11)
 ]
 
 classifiers = [
