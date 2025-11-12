@@ -770,9 +770,10 @@ class DocProject(object):
             self._pages = {key: MkDocsPage(value) for key, value in pages.items()}
             return self._pages
         
-    def get_page(self, name:str) -> MkDocsPage | None:
+    def get_page(self, name:str) -> MkDocsPage:
         """
-        Find a name in the list of Markdown pages (filenames)
+        Find a page with its name in the list of Markdown pages (filenames).
+        If not found, return None
 
         Arguments:
             name: a page name (full or partial, with or without extension).
