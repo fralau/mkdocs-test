@@ -6,10 +6,9 @@ import yaml
 import inspect
 import subprocess
 import re
-from dataclasses import dataclass, field
-from typing import List
+from dataclasses import dataclass
+from typing import List, Dict
 import json
-from typing import Any, List
 import textwrap
 
 
@@ -756,7 +755,7 @@ class DocProject(object):
         return filename
 
     @property
-    def pages(self) -> dict[MkDocsPage]:
+    def pages(self) -> Dict[str, MkDocsPage]:
         """
         The dictionary containing the pages 
         (Markdown + HTML + ...) produced by the build.
