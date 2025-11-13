@@ -14,7 +14,7 @@ from io import StringIO
 import inspect
 import subprocess
 import yaml
-from typing import List, Tuple
+from typing import List, Dict, Tuple
 
 import markdown
 import pandas as pd
@@ -323,7 +323,7 @@ def get_first_h1(markdown_text: str):
 
 
 
-def get_tables(markdown_text:str) -> dict[pd.DataFrame]:
+def get_tables(markdown_text:str) -> Dict[pd.DataFrame]:
     """
     Convert markdown text to HTML, extract tables, 
     and convert them to dataframes.
