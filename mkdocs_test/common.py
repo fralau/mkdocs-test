@@ -323,7 +323,7 @@ def get_first_h1(markdown_text: str):
 
 
 
-def get_tables(markdown_text:str) -> Dict[pd.DataFrame]:
+def get_tables(markdown_text:str) -> Dict[str, pd.DataFrame]:
     """
     Convert markdown text to HTML, extract tables, 
     and convert them to dataframes.
