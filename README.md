@@ -9,7 +9,8 @@
 ![Language](https://img.shields.io/github/languages/top/fralau/mkdocs-test)
 ![Github](https://img.shields.io/github/v/tag/fralau/mkdocs-test?label=github%20tag)
 ![PyPI](https://img.shields.io/pypi/v/mkdocs-test)
-![Downloads](https://img.shields.io/pypi/dm/mkdocs-test) 
+![Downloads](https://img.shields.io/pypi/dm/mkdocs-test)
+![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)
 
 [View the documentation](https://mkdocs-test-plugin.readthedocs.io/en/latest/) on Read the Docs
   
@@ -27,6 +28,7 @@ markdown-toc -i README.md
     - [MkDocs-Test](#mkdocs-test)
   - [Usage](#usage)
     - [Installation](#installation)
+      - [Requirements](#requirements)
       - [From pypi](#from-pypi)
       - [Locally (Github)](#locally-github)
     - [Installing the plugin](#installing-the-plugin)
@@ -78,6 +80,10 @@ MkDocs-Test is a framework composed of two parts:
 ## Usage
 
 ### Installation 
+
+#### Requirements
+
+- Python 3.8 or higher 
 
 #### From pypi
 
